@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiKuKos - Sistem Informasi Keuangan Kos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     FILE   : index.html (CSS)
+     WBS    : SCP-01 - Arsitektur Front-End
+     Sistem : SiKuKos - Sistem Informasi Keuangan Kos
+  ============================================================ */
+  :root {
+    --bg: #f4f6fb;
+    --sidebar: #0f2744;
+    --sidebar-hover: #1a3a62;
+    --sidebar-active: #1e4a80;
+    --accent: #2563eb;
+    --accent2: #10b981;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --light: #f8fafc;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 14px; }
+  .sidebar { width: 240px; min-height: 100vh; background: var(--sidebar); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+  .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .sidebar-logo h1 { font-family: 'Sora', sans-serif; color: #fff; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  .sidebar-logo p { color: rgba(255,255,255,0.45); font-size: 11px; margin-top: 2px; }
+  .sidebar-section { padding: 16px 12px 8px; color: rgba(255,255,255,0.3); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 2px 8px; border-radius: 8px; cursor: pointer; color: rgba(255,255,255,0.65); font-size: 13.5px; transition: all 0.15s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+  .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+  .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .user-badge { display: flex; align-items: center; gap: 10px; }
+  .user-avatar { width: 34px; height: 34px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; }
+  .user-info p { color: #fff; font-size: 13px; font-weight: 600; }
+  .user-info span { color: rgba(255,255,255,0.4); font-size: 11px; }
+  .sidebar-user-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+  .sidebar-action-btn { width: 100%; justify-content: center; padding: 7px 10px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.82); font-size: 12px; }
+  .sidebar-action-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
+  .main { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .badge-date { background: var(--light); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--muted); }
+  .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { background: var(--light); }
+  .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 7px; }
+  .content { padding: 24px 28px; flex: 1; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--card); border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .stat-card .label { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  .stat-card .value { font-size: 22px; font-weight: 700; font-family: 'Sora', sans-serif; }
+  .stat-card .change { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-card .icon-wrap { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .green { color: #10b981; } .red { color: #ef4444; } .blue { color: #2563eb; } .amber { color: #f59e0b; }
+  .bg-green { background: #d1fae5; } .bg-red { background: #fee2e2; } .bg-blue { background: #dbeafe; } .bg-amber { background: #fef3c7; }
+  .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h3 { font-size: 14px; font-weight: 700; }
+  .card-body { padding: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 10px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); background: var(--light); }
+  td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--light); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-income { background: #d1fae5; color: #065f46; }
+  .badge-expense { background: #fee2e2; color: #991b1b; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; background: var(--card); color: var(--text); outline: none; transition: border 0.15s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .password-field { position: relative; display: flex; align-items: center; }
+  .password-field input { width: 100%; padding-right: 46px; }
+  .password-toggle { position: absolute; right: 8px; width: 34px; height: 34px; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .password-toggle:hover { background: var(--light); color: var(--accent); }
+  .password-toggle .eye-off-icon { display: none; }
+  .password-toggle.is-visible .eye-icon { display: none; }
+  .password-toggle.is-visible .eye-off-icon { display: block; }
+  .form-hint { color: var(--muted); font-size: 11px; line-height: 1.4; }
+  .form-full { grid-column: 1 / -1; }
+  .form-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 22px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .form-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .tx-billing-preview { margin-top: 16px; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--light); }
+  .tx-billing-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .tx-billing-head strong { font-size: 13px; }
+  .tx-billing-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .tx-billing-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); min-width: 0; }
+  .tx-billing-item span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+  .tx-billing-item b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-wrap { padding: 20px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 160px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 6px 6px 0 0; transition: opacity 0.2s; cursor: pointer; min-width: 28px; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 10px; color: var(--muted); font-weight: 500; }
+  .report-section { margin-bottom: 20px; }
+  .report-row { display: flex; justify-content: space-between; padding: 9px 14px; border-radius: 6px; font-size: 13px; }
+  .report-row:nth-child(odd) { background: var(--light); }
+  .report-row.total { background: #e8f0fe; font-weight: 700; border-radius: 8px; font-size: 14px; }
+  .report-row.total-laba { background: #d1fae5; font-weight: 700; border-radius: 8px; font-size: 15px; color: #065f46; }
+  .report-row.total-rugi { background: #fee2e2; font-weight: 700; border-radius: 8px; font-size: 15px; color: #991b1b; }
+  .report-hint { margin-top: 10px; padding: 9px 12px; border-radius: 8px; background: var(--light); color: var(--muted); font-size: 12px; line-height: 1.45; }
+  .payment-status-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+  .payment-status-note { color: var(--muted); font-size: 11px; line-height: 1.35; }
+  .dashboard-action-hint { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--light); display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
+  .dashboard-action-hint strong { color: var(--text); }
+  .readonly-pill { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--light); font-size: 13px; font-weight: 700; }
+  .status-legend { margin-bottom: 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--light); color: var(--muted); font-size: 12px; line-height: 1.45; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; padding: 0 14px; }
+  .login-wrap { width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #a9a9a9; overflow: auto; }
+  .login-card { width: min(896px, 100%); min-height: 561px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: #fff; border-radius: 22px; box-shadow: 0 24px 55px rgba(15,39,68,0.24); }
+  .login-brand { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 48px; background: #1d416b; color: #fff; }
+  .login-brand::after { content: ""; position: absolute; top: -80px; right: -80px; width: 256px; height: 256px; border-radius: 50%; background: rgba(47,84,132,0.58); }
+  .login-brand-content, .login-brand-footer { position: relative; z-index: 1; }
+  .login-brand h1 { font-family: 'Sora', sans-serif; font-size: 38px; line-height: 1; font-weight: 700; letter-spacing: -1.2px; margin-bottom: 20px; }
+  .login-brand p { max-width: 330px; color: rgba(255,255,255,0.82); font-size: 19px; line-height: 1.58; }
+  .login-brand-footer { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.92); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .login-brand-footer::before { content: ""; width: 32px; height: 4px; border-radius: 999px; background: #3b82f6; }
+  .login-form-panel { display: flex; align-items: center; justify-content: center; padding: 48px; background: #fff; }
+  .login-form { width: min(100%, 352px); }
+  .login-form h2 { font-family: 'Sora', sans-serif; color: #111827; font-size: 32px; line-height: 1.1; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+  .login-form p { color: #64748b; font-size: 14px; line-height: 1.5; margin-bottom: 38px; }
+  .login-form .form-group { margin-bottom: 24px; gap: 8px; }
+  .login-form .form-group label { color: #64748b; font-size: 12px; letter-spacing: 0.7px; }
+  .login-form input { width: 100%; height: 50px; padding: 12px 16px; border-color: #dbe4ef; border-radius: 12px; color: #334155; font-size: 15px; box-shadow: 0 1px 1px rgba(15,39,68,0.02); }
+  .login-form .password-field input { padding-right: 48px; }
+  .login-form .password-toggle { color: #64748b; }
+  .login-form .password-toggle:hover { background: #eff6ff; color: #1d4ed8; }
+  .login-form input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+  .btn-login { width: 100%; height: 56px; justify-content: center; margin-top: 0; padding: 0 16px; border-radius: 11px; font-size: 16px; box-shadow: 0 10px 18px rgba(37,99,235,0.28); }
+  .login-password-link { width: 100%; height: 44px; justify-content: center; margin-top: 12px; border: 1px solid #d7e8ff; background: #fff; color: #1d4ed8; border-radius: 11px; font-size: 14px; box-shadow: none; }
+  .login-password-link:hover { background: #eff6ff; }
+  .login-hint { margin-top: 32px; padding: 17px 16px; background: #eff6ff; border: 1px solid #d7e8ff; border-radius: 11px; color: #1d4ed8; font-size: 14px; line-height: 1.55; }
+  .login-hint code { font-family: inherit; }
+  @media (max-width: 760px) {
+    .login-wrap { align-items: flex-start; padding: 20px; }
+    .login-card { grid-template-columns: 1fr; min-height: 0; max-width: 420px; }
+    .login-brand { min-height: 260px; padding: 38px 36px; }
+    .login-form-panel { padding: 40px 36px; }
+  }
+  @media (max-width: 460px) {
+    .login-wrap { padding: 0; background: #1d416b; }
+    .login-card { min-height: 100vh; border-radius: 0; }
+    .login-brand { min-height: 230px; padding: 32px 28px; }
+    .login-brand h1 { font-size: 34px; }
+    .login-brand p { font-size: 16px; }
+    .login-form-panel { padding: 34px 28px; }
+  }
+  .kamar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kamar-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 16px; cursor: pointer; transition: all 0.15s; }
+  .kamar-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .kamar-card.terisi { border-top: 3px solid var(--accent2); }
+  .kamar-card.kosong { border-top: 3px solid var(--muted); }
+  .kamar-card.tunggakan { border-top: 3px solid var(--danger); }
+  .kamar-no { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; }
+  .kamar-status { font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .kamar-tenant { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .kamar-harga { font-size: 13px; font-weight: 700; margin-top: 8px; color: var(--accent); }
+  .kamar-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .kamar-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .kamar-action-btn { width: 30px; height: 30px; padding: 0; justify-content: center; }
+  .page-header { margin-bottom: 22px; }
+  .page-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .page-header h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
+  .page-header p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15,39,68,0.42); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 500; }
+  .modal-backdrop.show { display: flex; }
+  .modal-panel { width: min(560px, 100%); background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-md); overflow: hidden; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .modal-header h3 { font-size: 15px; font-weight: 700; }
+  .modal-body { padding: 20px; }
+  .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--light); }
+  .icon-btn { width: 34px; height: 34px; padding: 0; justify-content: center; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  @media print {
+    body * { visibility: hidden !important; }
+    #page-laporan, #page-laporan * { visibility: visible !important; }
+    #page-laporan { position: fixed; left: 0; top: 0; width: 100%; padding: 20px; }
+    .sidebar, .topbar, .btn, select, #laporanBulan { display: none !important; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px; }
+    .card-header { background: #0f2744 !important; color: white !important; padding: 8px 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card-header h3 { color: white !important; font-size: 13px; }
+    .report-row { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 12px; }
+    .report-row.total { background: #dbeafe !important; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-row.total-laba { background: #d1fae5 !important; font-weight: 700; color: #065f46 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-row.total-rugi { background: #fee2e2 !important; font-weight: 700; color: #991b1b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-hint { background: #f8fafc !important; color: #555 !important; border: 1px solid #eee; padding: 6px 10px; font-size: 10.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .payment-status-note { color: #555 !important; font-size: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { background: #0f2744 !important; color: white !important; padding: 6px 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+    .badge-income { background: #d1fae5 !important; color: #065f46 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge-expense { background: #fee2e2 !important; color: #991b1b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge-pending { background: #fef3c7 !important; color: #92400e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    @page { margin: 12mm; size: A4; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-content">
+        <h1>SiKuKos</h1>
+        <p>Mengelola sistem informasi keuangan kos Anda dengan lebih simpel, aman, dan efisien.</p>
+      </div>
+      <div class="login-brand-footer">Solusi Properti</div>
+    </div>
+    <div class="login-form-panel">
+      <div class="login-form">
+        <h2>SiKuKos</h2>
+        <p>Sistem Informasi Keuangan Kos &mdash; Masuk untuk melanjutkan</p>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="loginUser" placeholder="pemilik_kos" value="pemilik_kos">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-field">
+            <input type="password" id="loginPass" placeholder="&bull;&bull;&bull;" value="kos_123">
+            <button class="password-toggle" type="button" onclick="togglePasswordVisibility('loginPass', this)" aria-label="Tampilkan password" aria-pressed="false">
+              <svg class="eye-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 19C5 19 1 12 1 12a20.29 20.29 0 015.06-5.94"/><path d="M9.9 4.24A10.45 10.45 0 0112 4c7 0 11 8 11 8a20.27 20.27 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 01-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-login" onclick="doLogin()">Masuk ke Sistem</button>
+        <button class="btn login-password-link" type="button" onclick="openLoginPasswordModal()">Ganti Password</button>
+        <div class="login-hint">
+          <strong>Demo:</strong> Username: <code>pemilik_kos</code> | Password: <code>kos_123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- APP SHELL -->
+<div id="appShell" style="display:none; width:100%;">
+<nav class="sidebar">
+  <div class="sidebar-logo"><h1>SiKuKos</h1><p>Sistem Informasi Keuangan Kos</p></div>
+  <div class="sidebar-section">Menu Utama</div>
+  <div class="nav-item active" onclick="showPage('dashboard',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-item" onclick="showPage('kamar',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Data Kamar
+  </div>
+  <div class="sidebar-section">Keuangan</div>
+  <div class="nav-item" onclick="showPage('transaksi',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Input Transaksi
+  </div>
+  <div class="nav-item" onclick="showPage('riwayat',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Riwayat Transaksi
+  </div>
+  <div class="nav-item" onclick="showPage('laporan',this)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Laporan Keuangan
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar">PK</div>
+      <div class="user-info"><p>Pemilik Kos</p><span>Admin</span></div>
+    </div>
+    <div class="sidebar-user-actions">
+    </div>
+  </div>
+</nav>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-right">
+      <span class="badge-date" id="curDate"></span>
+      <button class="btn btn-outline" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header"><h2>Selamat Datang</h2><p>Ringkasan keuangan kos bulan ini</p></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="icon-wrap bg-green"><svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="label">Total Uang Masuk</div><div class="value green" id="dashIncome">Rp 0</div><div class="change green">Bulan ini</div></div>
+        <div class="stat-card"><div class="icon-wrap bg-red"><svg width="20" height="20" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div><div class="label">Total Uang Keluar</div><div class="value red" id="dashExpense">Rp 0</div><div class="change red">Bulan ini</div></div>
+        <div class="stat-card"><div class="icon-wrap bg-blue"><svg width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="label">Laba Bersih</div><div class="value blue" id="dashLaba">Rp 0</div><div class="change blue">Bulan ini</div></div>
+        <div class="stat-card"><div class="icon-wrap bg-amber"><svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="label">Kamar Terisi</div><div class="value amber" id="dashKamar">0 / 8</div><div class="change amber">Tingkat hunian</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card"><div class="card-header"><h3>Grafik Uang Masuk vs Uang Keluar</h3></div><div class="chart-wrap"><div class="bar-chart" id="barChart"></div><div style="display:flex;gap:16px;margin-top:12px;"><span style="font-size:11px;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#2563eb;display:inline-block;"></span>Uang Masuk</span><span style="font-size:11px;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block;"></span>Uang Keluar</span></div><div class="dashboard-action-hint"><span id="dashActionHint">Memuat status pembayaran kamar...</span><button class="btn btn-outline btn-sm" type="button" onclick="goToTransaksiPage()">Catat Pembayaran</button></div></div></div>
+        <div class="card"><div class="card-header"><h3>Transaksi Terbaru</h3></div><div class="card-body"><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Jumlah</th></tr></thead><tbody id="dashRecentTbl"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- DATA KAMAR -->
+    <div class="page" id="page-kamar">
+      <div class="page-header page-header-row">
+        <div><h2>Data Kamar</h2><p>Status hunian dan informasi penyewa</p></div>
+        <button class="btn btn-primary" onclick="openCreateKamarModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Kamar
+        </button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;">
+        <div class="stat-card" style="flex:1;"><div class="label">Total Kamar</div><div class="value" id="kamarTotal">0</div></div>
+        <div class="stat-card" style="flex:1;"><div class="label">Terisi</div><div class="value green" id="kamarTerisi">0</div></div>
+        <div class="stat-card" style="flex:1;"><div class="label">Kosong</div><div class="value" id="kamarKosong">0</div></div>
+        <div class="stat-card" style="flex:1;"><div class="label">Tunggakan</div><div class="value red" id="kamarTunggak">0</div></div>
+      </div>
+      <div class="status-legend"><strong>Lunas</strong> = sudah bayar penuh. <strong>Sebagian</strong> = sudah bayar, tapi belum penuh. <strong>Belum Bayar</strong> = belum ada pembayaran bulan ini.</div>
+      <div class="kamar-grid" id="kamarGrid"></div>
+    </div>
+
+    <!-- INPUT TRANSAKSI -->
+    <div class="page" id="page-transaksi">
+      <div class="page-header"><h2>Input Transaksi</h2><p>Catat uang masuk dan uang keluar kos</p></div>
+      <div id="txAlert" style="display:none;"></div>
+      <div class="form-card">
+        <h3>Form Input Transaksi Baru</h3>
+        <div class="form-grid">
+        <div class="form-group"><label>Tanggal Transaksi</label><input type="date" id="txDate" onchange="updateRentPreview()"><span class="form-hint">Bulan tagihan mengikuti bulan pada tanggal transaksi.</span></div>
+          <div class="form-group"><label>Jenis Catatan</label><select id="txType" onchange="updateTxForm()"><option value="">— Pilih Jenis —</option><option value="pemasukan">Uang Masuk</option><option value="pengeluaran">Uang Keluar</option></select></div>
+          <div class="form-group" id="kamarFieldWrap"><label>Nomor Kamar</label><select id="txKamar" onchange="updateRentPreview()"><option value="">&mdash; Pilih Kamar &mdash;</option></select></div>
+          <div class="form-group"><label>Kategori</label><select id="txKategori" onchange="updateRentPreview()"><option value="">&mdash; Pilih Kategori &mdash;</option></select></div>
+          <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="txAmount" placeholder="600000" min="0" oninput="updateRentPreview()"></div>
+          <div class="form-group"><label>Metode Pembayaran</label><select id="txMetode"><option>Tunai</option><option>Transfer Bank</option><option>QRIS</option><option>OVO / GoPay</option></select></div>
+          <div class="form-group form-full"><label>Catatan / Keterangan</label><input type="text" id="txNote" placeholder="Keterangan boleh dikosongkan, sistem akan mengisi otomatis."></div>
+        </div>
+        <div id="txExpenseHint" class="form-hint" style="display:none;margin-top:10px;">Pengeluaran dicatat sebagai biaya operasional kos.</div>
+        <div id="txBillingPreview" class="tx-billing-preview" style="display:none;"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="btn btn-primary" onclick="submitTransaksi()">Simpan Catatan</button>
+          <button class="btn btn-outline" onclick="resetTxForm()">Kosongkan Form</button>
+        </div>
+      </div>
+      <div class="form-card">
+        <h3>Ringkasan Input Hari Ini</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="stat-card"><div class="label" id="todayInLabel">Uang Masuk Hari Ini</div><div class="value green" id="todayIn">Rp 0</div></div>
+          <div class="stat-card"><div class="label" id="todayOutLabel">Uang Keluar Hari Ini</div><div class="value red" id="todayOut">Rp 0</div></div>
+          <div class="stat-card"><div class="label" id="todaySaldoLabel">Saldo Hari Ini</div><div class="value blue" id="todaySaldo">Rp 0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div class="page" id="page-riwayat">
+      <div class="page-header"><h2>Riwayat Transaksi</h2><p>Semua catatan uang masuk dan uang keluar</p></div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <select id="filterType" onchange="renderRiwayat(1)" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;"><option value="">Tampilkan Semua</option><option value="pemasukan">Uang Masuk</option><option value="pengeluaran">Uang Keluar</option></select>
+        <select id="filterKat" onchange="renderRiwayat(1)" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;"><option value="">Kategori: Semua</option></select>
+        <span style="margin-left:auto;font-size:13px;color:var(--muted);align-self:center;" id="txCount"></span>
+      </div>
+      <div class="card"><div class="card-body"><table><thead><tr><th>#</th><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Kamar</th><th>Keterangan</th><th>Jumlah</th><th>Metode</th></tr></thead><tbody id="riwayatTbl"></tbody></table></div></div>
+      <div id="riwayatPagination" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:12px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;">
+        <div class="stat-card"><div class="label">Total Uang Masuk</div><div class="value green" id="rwIn">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Total Uang Keluar</div><div class="value red" id="rwOut">Rp 0</div></div>
+        <div class="stat-card"><div class="label">Saldo Bersih</div><div class="value blue" id="rwSaldo">Rp 0</div></div>
+      </div>
+    </div>
+
+    <!-- LAPORAN -->
+    <div class="page" id="page-laporan">
+      <div class="page-header"><h2>Laporan Keuangan</h2><p id="laporanSubtitle">Rekapitulasi saldo & laporan laba-rugi otomatis</p></div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;align-items:center;">
+        <select id="laporanBulan" onchange="renderLaporan()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;"><option value="">Memuat bulan...</option></select>
+        <button class="btn btn-outline" onclick="printLaporan()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Cetak Laporan</button>
+      </div>
+      <div class="two-col">
+        <div class="card"><div class="card-header"><h3>Laporan Laba-Rugi</h3></div><div class="card-body" style="padding:20px;"><div class="report-section"><div class="section-title">A. Pendapatan</div><div id="laporanIncome"></div><div class="report-row total"><span>Total Pendapatan</span><span id="lapTotalIn" class="green">Rp 0</span></div></div><div class="report-section" style="margin-top:16px;"><div class="section-title">B. Beban / Pengeluaran</div><div id="laporanExpense"></div><div class="report-row total"><span>Total Beban</span><span id="lapTotalOut" class="red">Rp 0</span></div></div><div style="margin-top:16px;" id="labaRugiResult"></div></div></div>
+        <div>
+          <div class="card" style="margin-bottom:16px;"><div class="card-header"><h3>Rekapitulasi Saldo</h3></div><div class="card-body" style="padding:16px 20px;"><div class="report-row"><span>Saldo Awal Bulan</span><span id="rekSaldoAwal">Rp 0</span></div><div class="report-row"><span>+ Total Uang Masuk</span><span class="green" id="rekIn">Rp 0</span></div><div class="report-row"><span>— Total Uang Keluar</span><span class="red" id="rekOut">Rp 0</span></div><div class="report-row total"><span>Saldo Akhir Bulan</span><span class="blue" id="rekSaldoAkhir">Rp 0</span></div><div class="report-hint">Saldo awal dihitung dari akumulasi transaksi sebelum bulan laporan.</div></div></div>
+          <div class="card"><div class="card-header"><h3>Status Pembayaran Kamar</h3></div><div class="card-body" style="padding:12px;"><table><thead><tr><th>Kamar</th><th>Penyewa</th><th>Status</th></tr></thead><tbody id="statusKamarTbl"></tbody></table></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="kamarModal" onclick="handleKamarModalBackdrop(event)">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="kamarModalTitle">
+    <div class="modal-header">
+      <h3 id="kamarModalTitle">Tambah Kamar</h3>
+      <button class="btn btn-outline icon-btn" type="button" onclick="closeKamarModal()" aria-label="Tutup">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="kamarForm" onsubmit="submitKamarForm(event)">
+      <div class="modal-body">
+        <input type="hidden" id="kamarId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nomor Kamar</label>
+            <input type="text" id="kamarNo" maxlength="10" placeholder="01" required>
+          </div>
+          <div class="form-group">
+            <label>Status Kamar</label>
+            <select id="kamarStatus" onchange="syncKamarFormState()" required>
+              <option value="terisi">Terisi</option>
+              <option value="kosong">Kosong</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <label>Nama Penyewa</label>
+            <input type="text" id="kamarTenant" maxlength="100" placeholder="Nama penyewa">
+          </div>
+          <div class="form-group">
+            <label>Harga Sewa</label>
+            <input type="number" id="kamarHarga" min="1" step="1" placeholder="600000" required>
+          </div>
+          <input type="hidden" id="kamarPembayaran" value="belum_bayar">
+          <div class="form-group">
+            <label>Status Pembayaran</label>
+            <div class="readonly-pill" id="kamarPembayaranInfo">Otomatis dari transaksi sewa</div>
+            <span class="form-hint">Status pembayaran dihitung dari catatan Sewa Bulanan.</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" onclick="closeKamarModal()">Batal</button>
+        <button class="btn btn-primary" type="submit" id="kamarSubmitBtn">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="passwordModal" onclick="handlePasswordModalBackdrop(event)">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle">
+    <div class="modal-header">
+      <button class="btn btn-outline icon-btn" type="button" onclick="closePasswordModal()" aria-label="Tutup">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="passwordForm" onsubmit="submitPasswordForm(event)">
+      <div class="modal-body">
+        <div id="passwordAlert" style="display:none;"></div>
+        <div class="form-grid">
+          <div class="form-group form-full" id="passwordUsernameWrap" style="display:none;">
+            <label>Username</label>
+            <input type="text" id="passwordUsername" maxlength="50" placeholder="pemilik_kos">
+          </div>
+          <div class="form-group form-full">
+            <label>Password Lama</label>
+            <div class="password-field">
+              <input type="password" id="oldPassword" maxlength="255" required>
+              <button class="password-toggle" type="button" onclick="togglePasswordVisibility('oldPassword', this)" aria-label="Tampilkan password lama" aria-pressed="false">
+                <svg class="eye-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 19C5 19 1 12 1 12a20.29 20.29 0 015.06-5.94"/><path d="M9.9 4.24A10.45 10.45 0 0112 4c7 0 11 8 11 8a20.27 20.27 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 01-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group form-full" id="usernameBaruWrap">
+            <label>Username Baru <span style="font-size:11px;color:#888;font-weight:400;">(kosongkan jika tidak ingin mengubah username)</span></label>
+            <input type="text" id="usernameBaru" maxlength="50" placeholder="Isi username baru, atau kosongkan">
+          </div>
+          <div class="form-group">
+            <label>Password Baru</label>
+            <div class="password-field">
+              <input type="password" id="newPassword" minlength="6" maxlength="255" required>
+              <button class="password-toggle" type="button" onclick="togglePasswordVisibility('newPassword', this)" aria-label="Tampilkan password baru" aria-pressed="false">
+                <svg class="eye-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 19C5 19 1 12 1 12a20.29 20.29 0 015.06-5.94"/><path d="M9.9 4.24A10.45 10.45 0 0112 4c7 0 11 8 11 8a20.27 20.27 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 01-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Konfirmasi Password</label>
+            <div class="password-field">
+              <input type="password" id="confirmPassword" minlength="6" maxlength="255" required>
+              <button class="password-toggle" type="button" onclick="togglePasswordVisibility('confirmPassword', this)" aria-label="Tampilkan konfirmasi password" aria-pressed="false">
+                <svg class="eye-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 19C5 19 1 12 1 12a20.29 20.29 0 015.06-5.94"/><path d="M9.9 4.24A10.45 10.45 0 0112 4c7 0 11 8 11 8a20.27 20.27 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 01-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" onclick="closePasswordModal()">Batal</button>
+        <button class="btn btn-primary" type="submit" id="passwordSubmitBtn">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     LOAD MODUL JS (urutan penting: database.js harus pertama)
+     Sesuai WBS 3.3 → 3.4 → 3.1 → 3.2 → app.js
+============================================================ -->
+<script src="database.js?v=20260602-8"></script>
+<script src="modul_kamar.js?v=20260602-8"></script>
+<script src="modul_transaksi.js?v=20260602-8"></script>
+<script src="modul_laporan.js?v=20260602-8"></script>
+<script src="app.js?v=20260602-8"></script>
+</body>
+</html>
