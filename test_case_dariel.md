@@ -10,7 +10,7 @@
 | Field | Detail |
 |-------|--------|
 | **ID Test Case** | TC-01 |
-| **Nama Test** | Mencatat transaksi pemasukan sewa kamar |
+| **Nama Test** | Mencatat transaksi pemasukan sewa kamar |.
 | **Kondisi Awal** | Pengguna sudah login dan berada di halaman Input Transaksi |
 | **Langkah Pengujian** | 1. Klik menu "Input Transaksi" di sidebar <br> 2. Isi Tanggal Transaksi: `09/06/2026` <br> 3. Pilih Jenis Transaksi: `Pemasukan` <br> 4. Pilih Nomor Kamar: `K.01` <br> 5. Pilih Kategori: `Sewa Bulanan` <br> 6. Isi Jumlah: `800000` <br> 7. Pilih Metode Pembayaran: `Tunai` <br> 8. Klik tombol "Simpan Transaksi" |
 | **Hasil yang Diharapkan** | Data transaksi tersimpan dan panel "Ringkasan Input Hari Ini" langsung terupdate |
